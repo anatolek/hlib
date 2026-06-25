@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -1291,6 +1291,89 @@ apiVersion: autoscaling/v1
 {{- end -}}
 ```
 
+### `hlib.vpa` template
+
+Creates Kubernetes VerticalPodAutoscaler resources (`autoscaling.k8s.io/v1`).
+
+> Requires the [Vertical Pod Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) controller and its CRDs to be installed in the cluster.
+
+By default, the autoscaler targets the chart `Deployment`.
+
+#### Basic Usage
+
+Include this template in your chart's `templates/vpa.yaml`:
+
+```handlebars
+{{- include "hlib.vpa" (dict "context" .) }}
+```
+
+Add the following values
+
+```yaml
+vpa:
+  updatePolicy:
+    updateMode: "Recreate"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: "*"
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: "1"
+          memory: 512Mi
+        controlledResources: ["cpu", "memory"]
+```
+
+#### Configuration
+
+| Parameter      | Description                                                               | Required | Default       |
+|----------------|---------------------------------------------------------------------------|----------|---------------|
+| `context`      | Root Helm context (usually `.`)                                           | Yes      | -             |
+| `values`       | Vertical Pod Autoscaler configuration values (from `values.yaml`)         | No       | `.Values.vpa` |
+| `dependencies` | Dictionary of dependent components (see below)                            | No       | -             |
+| `override`     | Name of a template that overrides the basic one configured in the library | No       | -             |
+
+**Dependency Integration**
+
+Used to override the configuration path of resources on which it depends.
+The dependency is only used to resolve the default `targetRef` and is ignored when `vpa.targetRef` is set explicitly.
+
+| Dependency   | Usage                | Default              |
+|--------------|----------------------|----------------------|
+| `deployment` | Deployment reference | `.Values.deployment` |
+
+```handlebars
+{{- $dependencies := dict "deployment" .Values.newDeployment -}}
+{{- include "hlib.vpa" (dict "context" . "dependencies" $dependencies) }}
+```
+
+**Custom target reference**
+
+By default the VPA targets the chart `Deployment`. Point it to another controller (e.g. `StatefulSet`) with `vpa.targetRef`:
+
+```yaml
+vpa:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: my-statefulset
+```
+
+#### Advanced: Template Overrides
+
+The changes can only be added to the base template via `override` parameter, e.g.:
+
+```handlebars
+{{- include "hlib.vpa" (dict "context" . "override" "app.vpa") -}}
+
+{{- define "app.vpa" -}}
+spec:
+  updatePolicy:
+    updateMode: "Initial"
+{{- end -}}
+```
+
 ### `hlib.pdb` template
 
 Creates Kubernetes PodDisruptionBudget resources.
@@ -1973,6 +2056,17 @@ Override Service/Ingress/HTTPRoute References
 | serviceAccount.annotations | tpl/object | `{}` | Annotations to add to the ServiceAccount metadata. |
 | serviceAccount.automountServiceAccountToken | tpl/bool | `nil` | Automatically mount the service account token. |
 | serviceAccount.name | tpl/string | Release fullname | Override the name of the ServiceAccount. |
+
+### VerticalPodAutoscaler
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| vpa.annotations | tpl/object | `{}` | Annotations to add to the VPA resource. |
+| vpa.name | tpl/string | Release fullname | Name of the VPA resource. |
+| vpa.recommenders | tpl/list | `[]` | Recommender responsible for generating the recommendation. Empty uses the default recommender. |
+| vpa.resourcePolicy | tpl/object | `{}` | Controls how the autoscaler computes recommended resources (containerPolicies). |
+| vpa.targetRef | tpl/object | Chart Deployment reference | Reference to the controller managing the set of pods to scale. |
+| vpa.updatePolicy | tpl/object | `{}` | Rules on how changes are applied to the pods (e.g. updateMode, minReplicas). |
 
 ### Other Values
 

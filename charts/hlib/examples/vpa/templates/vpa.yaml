@@ -1,0 +1,3 @@
+{{- if .Values.vpa.enabled }}
+{{- include "hlib.vpa" (dict "context" .) -}}
+{{- end }}

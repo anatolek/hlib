@@ -3,7 +3,7 @@ name: hlib
 description: Helm library chart for common Kubernetes templates
 type: library
 kubeVersion: '>=1.32.0-0'
-version: 0.7.0
+version: 0.8.0
 home: https://github.com/anatolek/helm-charts
 icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
 sources:
@@ -28,7 +28,7 @@ annotations:
   artifacthub.io/license: Apache-2.0
   artifacthub.io/changes: |
     - kind: added
-      description: NetworkPolicy template (hlib.networkPolicy) with configurable podSelector, policyTypes, ingress and egress rules
+      description: VerticalPodAutoscaler template (hlib.vpa) and a new vpa example
   artifacthub.io/links: |
     - name: GitHub Repository
       url: https://github.com/anatolek/helm-charts

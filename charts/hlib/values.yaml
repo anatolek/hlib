@@ -678,6 +678,47 @@ autoscaling:
   # @section -- HorizontalPodAutoscaler
   behavior: {}
 
+vpa:
+  # -- (tpl/string) Name of the VPA resource.
+  # @section -- VerticalPodAutoscaler
+  # @default -- Release fullname
+  name: ""
+
+  # -- (tpl/object) Annotations to add to the VPA resource.
+  # @section -- VerticalPodAutoscaler
+  annotations: {}
+
+  # -- (tpl/object) Reference to the controller managing the set of pods to scale.
+  # @section -- VerticalPodAutoscaler
+  # @default -- Chart Deployment reference
+  targetRef: {}
+  #   apiVersion: apps/v1
+  #   kind: Deployment
+  #   name: my-app
+
+  # -- (tpl/object) Rules on how changes are applied to the pods (e.g. updateMode, minReplicas).
+  # @section -- VerticalPodAutoscaler
+  updatePolicy: {}
+  #   updateMode: "Recreate"
+
+  # -- (tpl/object) Controls how the autoscaler computes recommended resources (containerPolicies).
+  # @section -- VerticalPodAutoscaler
+  resourcePolicy: {}
+  #   containerPolicies:
+  #     - containerName: "*"
+  #       minAllowed:
+  #         cpu: 50m
+  #         memory: 64Mi
+  #       maxAllowed:
+  #         cpu: "1"
+  #         memory: 512Mi
+  #       controlledResources: ["cpu", "memory"]
+
+  # -- (tpl/list) Recommender responsible for generating the recommendation. Empty uses the default recommender.
+  # @section -- VerticalPodAutoscaler
+  recommenders: []
+  #   - name: custom-recommender
+
 ingress:
   # -- (tpl/string) Name of the ingress resource.
   # @section -- Ingress

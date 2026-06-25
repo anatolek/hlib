@@ -1,0 +1,40 @@
+{{- define "hlib.vpa.tpl" -}}
+{{- $ := .context -}}
+{{- $vpa := .values | default $.Values.vpa -}}
+{{- $deploy := ((.dependencies).deployment) | default $.Values.deployment -}}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "hlib.util.tplrender" (dict "value" ($vpa.name | default (include "hlib.fullname" $)) "context" $) }}
+  labels: {{- include "hlib.labels" $ | nindent 4 }}
+  {{- if $vpa.annotations }}
+  annotations: {{- include "hlib.util.tplrender" (dict "value" $vpa.annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $vpa.targetRef }}
+  targetRef: {{- include "hlib.util.tplrender" (dict "value" $vpa.targetRef "context" $) | nindent 4 }}
+  {{- else }}
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "hlib.util.tplrender" (dict "value" ($deploy.name | default (include "hlib.fullname" $)) "context" $) }}
+  {{- end }}
+  {{- if $vpa.updatePolicy }}
+  updatePolicy: {{- include "hlib.util.tplrender" (dict "value" $vpa.updatePolicy "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $vpa.resourcePolicy }}
+  resourcePolicy: {{- include "hlib.util.tplrender" (dict "value" $vpa.resourcePolicy "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $vpa.recommenders }}
+  recommenders: {{- include "hlib.util.tplrender" (dict "value" $vpa.recommenders "context" $) | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{- define "hlib.vpa" -}}
+{{- if .override }}
+{{- $_ := set . "base" "hlib.vpa.tpl" -}}
+{{- include "hlib.util.merge" . -}}
+{{- else }}
+{{- toYaml (fromYaml (include "hlib.vpa.tpl" .)) -}}
+{{- end -}}
+{{- end -}}
