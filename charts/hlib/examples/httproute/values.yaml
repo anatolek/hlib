@@ -1,0 +1,41 @@
+diagnosticMode:
+  # -- Whether to enable diagnostic mode
+  enabled: false
+
+httpRoute:
+  # -- Whether to enable HTTPRoute.
+  enabled: true
+  parentRefs:
+    - name: gateway
+      namespace: gateway-system
+      sectionName: https
+  hostnames:
+    - app.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+# @ignored
+deployment:
+  container:
+    resourceTier: "m100Mi-c100m"
+    port: 8080
+    image:
+      repository: nginx
+    livenessProbe:
+      tcpSocket:
+        port: cont-tcp-port
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 6
+    readinessProbe:
+      tcpSocket:
+        port: cont-tcp-port
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 3
+      successThreshold: 1
+      failureThreshold: 3

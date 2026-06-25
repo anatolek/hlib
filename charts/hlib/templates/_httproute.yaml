@@ -1,0 +1,58 @@
+{{- define "hlib.httpRoute.tpl" -}}
+{{- $ := .context -}}
+{{- $hr := .values | default $.Values.httpRoute -}}
+{{- $svc := ((.dependencies).service) | default $.Values.service -}}
+{{- $requiredMsg := include "hlib.default-check-required-msg" $ -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "hlib.util.tplrender" (dict "value" ($hr.name | default (include "hlib.fullname" $)) "context" $) }}
+  labels: {{- include "hlib.labels" $ | nindent 4 }}
+  {{- if $hr.annotations }}
+  annotations: {{- include "hlib.util.tplrender" (dict "value" $hr.annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $hr.parentRefs }}
+  parentRefs: {{- include "hlib.util.tplrender" (dict "value" $hr.parentRefs "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $hr.hostnames }}
+  hostnames: {{- include "hlib.util.tplrender" (dict "value" $hr.hostnames "context" $) | nindent 4 }}
+  {{- end }}
+  rules:
+  {{- range $rule := (required (printf $requiredMsg ".rules") $hr.rules) }}
+  - {{- if $rule.name }}
+    name: {{ include "hlib.util.tplrender" (dict "value" $rule.name "context" $) }}
+    {{- end }}
+    {{- if $rule.matches }}
+    matches: {{- include "hlib.util.tplrender" (dict "value" $rule.matches "context" $) | nindent 6 }}
+    {{- end }}
+    {{- if $rule.filters }}
+    filters: {{- include "hlib.util.tplrender" (dict "value" $rule.filters "context" $) | nindent 6 }}
+    {{- end }}
+    {{- if $rule.timeouts }}
+    timeouts: {{- include "hlib.util.tplrender" (dict "value" $rule.timeouts "context" $) | nindent 6 }}
+    {{- end }}
+    {{- if $rule.retry }}
+    retry: {{- include "hlib.util.tplrender" (dict "value" $rule.retry "context" $) | nindent 6 }}
+    {{- end }}
+    {{- if $rule.sessionPersistence }}
+    sessionPersistence: {{- include "hlib.util.tplrender" (dict "value" $rule.sessionPersistence "context" $) | nindent 6 }}
+    {{- end }}
+    backendRefs:
+    {{- if $rule.backendRefs }}
+    {{- include "hlib.util.tplrender" (dict "value" $rule.backendRefs "context" $) | nindent 4 }}
+    {{- else }}
+      - name: {{ include "hlib.util.tplrender" (dict "value" ($svc.name | default (include "hlib.fullname" $)) "context" $) }}
+        port: {{ include "hlib.util.tplrender" (dict "value" ($svc.port | default 80) "context" $) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- define "hlib.httpRoute" -}}
+{{- if .override }}
+{{- $_ := set . "base" "hlib.httpRoute.tpl" -}}
+{{- include "hlib.util.merge" . -}}
+{{- else }}
+{{- toYaml (fromYaml (include "hlib.httpRoute.tpl" .)) -}}
+{{- end -}}
+{{- end -}}

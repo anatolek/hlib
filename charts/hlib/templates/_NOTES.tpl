@@ -31,12 +31,37 @@ REVISION: {{ $.Release.Revision }}
 
 {{- define "hlib.notes.accessAppInfo" -}}
 {{- $ := .context -}}
+{{- $hr := .httpRoute | default $.Values.httpRoute -}}
 {{- $ing := .ingress | default $.Values.ingress -}}
 {{- $svc := .service | default $.Values.service -}}
 {{- $svcType := $svc.type | default "ClusterIP" -}}
 {{- $svcPort := $svc.port | default 80 -}}
 
-{{- if and $ing.enabled $ing.hosts }}
+{{- if and $hr.enabled $hr.hostnames $hr.rules }}
+**Access application via HTTPRoute:**
+
+   {{- $useHttps := false }}
+   {{- range $hr.parentRefs }}
+   {{- if eq (.sectionName | default "") "https" }}
+   {{- $useHttps = true }}
+   {{- end }}
+   {{- end }}
+   {{- range $hr.hostnames }}
+   {{- $host := . }}
+   {{- range $hr.rules }}
+   {{- range .matches }}
+   {{- if .path }}
+   http{{ if $useHttps }}s{{ end }}://{{ $host }}{{ .path.value | default "/" }}
+   {{- else }}
+   http{{ if $useHttps }}s{{ end }}://{{ $host }}/
+   {{- end }}
+   {{- end }}
+   {{- end }}
+   {{- end }}
+
+   Make sure your DNS is configured to resolve these hostnames to the Gateway's external address.
+
+{{- else if and $ing.enabled $ing.hosts }}
 **Access application via Ingress:**
 
    {{- range $ing.hosts }}
@@ -73,6 +98,10 @@ REVISION: {{ $.Release.Revision }}
 {{- if and (hasKey $ing "enabled") (not $ing.enabled) }}
 {{- println "" }}
 > Note: Ingress is disabled.
+{{- end }}
+{{- if and (hasKey $hr "enabled") (not $hr.enabled) }}
+{{- println "" }}
+> Note: HTTPRoute is disabled.
 {{- end }}
 {{- println "" }}
 {{- end }}
