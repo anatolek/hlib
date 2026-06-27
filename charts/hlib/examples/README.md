@@ -3,6 +3,7 @@
 | Chart name             | Description                                                       |
 |------------------------|-------------------------------------------------------------------|
 | `env-variables`        | Different options for defining access to variables in a container |
+| `external-secrets`     | Create an ExternalSecret using the External Secrets Operator      |
 | `rbac`                 | Create RBAC resources                                             |
 | `subcharts`            | Deploying multiple deployments with subcharts                     |
 | `cronjob`              | Create CronJob                                                    |

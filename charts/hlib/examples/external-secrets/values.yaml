@@ -1,0 +1,25 @@
+externalSecrets:
+  # -- Refresh interval for syncing from the provider.
+  refreshInterval: "1h"
+
+  secretStoreRef:
+    # -- Name of the SecretStore to fetch data from.
+    name: "aws-secrets-manager"
+    # -- Kind of the SecretStore.
+    kind: "ClusterSecretStore"
+
+  target:
+    # -- Creation policy for the resulting Secret.
+    creationPolicy: "Owner"
+
+  # -- Mapping between target Secret keys and provider data.
+  data:
+    - secretKey: "app-token"
+      remoteRef:
+        key: "prod/app"
+        property: "token"
+
+  # -- Fetch all values from a provider secret.
+  dataFrom:
+    - extract:
+        key: "prod/app/config"

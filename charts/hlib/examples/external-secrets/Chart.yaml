@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 0.0.1
+description: A Helm chart for deploying an ExternalSecret
+keywords:
+- external-secrets
+name: external-secrets
+type: application
+version: 0.0.1
+icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
+dependencies:
+- name: hlib
+  version: ">= 0.0.0"
+  repository: https://anatolek.github.io/helm-charts

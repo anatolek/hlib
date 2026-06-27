@@ -537,6 +537,105 @@
                 }
             }
         },
+        "externalSecrets": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "description": "Annotations to add to the ExternalSecret metadata.",
+                    "type": "object"
+                },
+                "data": {
+                    "description": "Defines the connection between the Kubernetes Secret keys and the Provider data.",
+                    "type": "array"
+                },
+                "dataFrom": {
+                    "description": "Fetches all values from a specific Provider data. If multiple entries are specified, the Secret keys are merged in the specified order.",
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Override the name of the ExternalSecret.",
+                    "type": "string"
+                },
+                "refreshInterval": {
+                    "description": "Amount of time before the values are read again from the SecretStore provider, specified as a Golang Duration string (e.g. \"1h0m0s\"). May be set to \"0s\" to fetch and create it once. Defaults to \"1h0m0s\".",
+                    "type": "string"
+                },
+                "refreshPolicy": {
+                    "description": "Determines how the ExternalSecret should be refreshed. Valid values: \"CreatedOnce\", \"Periodic\", \"OnChange\".",
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "CreatedOnce",
+                        "Periodic",
+                        "OnChange"
+                    ]
+                },
+                "secretStoreRef": {
+                    "type": "object",
+                    "properties": {
+                        "kind": {
+                            "description": "Kind of the SecretStore resource. Valid values: \"SecretStore\", \"ClusterSecretStore\". Defaults to \"SecretStore\".",
+                            "type": "string",
+                            "enum": [
+                                "",
+                                "SecretStore",
+                                "ClusterSecretStore"
+                            ]
+                        },
+                        "name": {
+                            "description": "Name of the SecretStore resource.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "syncWindows": {
+                    "description": "Restricts periodic refreshes to allowed or denied UTC cron windows. Applies only to the \"Periodic\" refresh policy.",
+                    "type": "object"
+                },
+                "target": {
+                    "type": "object",
+                    "properties": {
+                        "creationPolicy": {
+                            "description": "Rules on how to create the resulting Secret. Valid values: \"Owner\", \"Orphan\", \"Merge\", \"CreateOrMerge\", \"None\". Defaults to \"Owner\".",
+                            "type": "string",
+                            "enum": [
+                                "",
+                                "Owner",
+                                "Orphan",
+                                "Merge",
+                                "CreateOrMerge",
+                                "None"
+                            ]
+                        },
+                        "deletionPolicy": {
+                            "description": "Rules on how to delete the resulting Secret. Valid values: \"Retain\", \"Merge\", \"Delete\". Defaults to \"Retain\".",
+                            "type": "string",
+                            "enum": [
+                                "",
+                                "Retain",
+                                "Merge",
+                                "Delete"
+                            ]
+                        },
+                        "immutable": {
+                            "description": "Defines if the final secret will be immutable.",
+                            "type": [
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "name": {
+                            "description": "Name of the Secret resource to be managed. Defaults to the `metadata.name` of the ExternalSecret.",
+                            "type": "string"
+                        },
+                        "template": {
+                            "description": "Template defines a blueprint for the created Secret resource.",
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "fullnameOverride": {
             "description": "Override the chart full name.",
             "type": "string"
