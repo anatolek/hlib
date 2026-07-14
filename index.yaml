@@ -4,6 +4,45 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: HTTPRoute template (hlib.httpRoute) for Gateway API routing with Service dependency injection
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: GitHub Repository
+          url: https://github.com/anatolek/helm-charts
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    created: "2026-07-14T21:03:11.555499517Z"
+    description: Helm library chart for common Kubernetes templates
+    digest: b5ce4d70abaef8473d10256118969d2779c19210f66b69c40b9d1218adfcaea6
+    home: https://github.com/anatolek/helm-charts
+    icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
+    keywords:
+    - helm
+    - library
+    - kubernetes
+    - templates
+    - deployment
+    - cronjob
+    - daemonset
+    - service
+    - ingress
+    - httproute
+    - gateway
+    kubeVersion: '>=1.32.0-0'
+    maintainers:
+    - email: anatolek@ukr.net
+      name: Anatolii Pedchenko
+    name: hlib
+    sources:
+    - https://github.com/anatolek/helm-charts
+    type: library
+    urls:
+    - https://github.com/anatolek/helm-charts/releases/download/hlib-0.6.0/hlib-0.6.0.tgz
+    version: 0.6.0
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: DaemonSet template (hlib.daemonSet) for node-level workloads
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/license: Apache-2.0
@@ -340,4 +379,4 @@ entries:
     urls:
     - https://github.com/anatolek/helm-charts/releases/download/hlib-0.0.1/hlib-0.0.1.tgz
     version: 0.0.1
-generated: "2026-07-01T06:16:38.882313846Z"
+generated: "2026-07-14T21:03:11.555535812Z"
