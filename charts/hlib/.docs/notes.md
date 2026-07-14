@@ -58,6 +58,7 @@ Output Depends on Configuration:
 
 | Service Type  | 	Example Output                                            |
 |---------------|-------------------------------------------------------------|
+| HTTPRoute     | Access application via HTTPRoute: https://app.example.com/  |
 | Ingress       | Access application via Ingress: https://app.example.com/api |
 | NodePort	    | Provides kubectl commands to retrieve node IP and ports     |
 | LoadBalancer	| Provides commands to get LB IP and port                     |
@@ -82,8 +83,8 @@ CLUSTER_NAME=...
 
 #### Customization Options
 
-Override Service/Ingress References
+Override Service/Ingress/HTTPRoute References
 
 ```handlebars
-{{- include "hlib.notes.accessAppInfo" (dict "context" . "service" .Values.customService "ingress" .Values.specialIngress) }}
+{{- include "hlib.notes.accessAppInfo" (dict "context" . "service" .Values.customService "ingress" .Values.specialIngress "httpRoute" .Values.customHttpRoute) }}
 ```

@@ -574,6 +574,35 @@
                 }
             }
         },
+        "httpRoute": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "description": "Annotations to be added to the HTTPRoute.",
+                    "type": "object"
+                },
+                "hostnames": {
+                    "description": "Hostnames to match against the HTTP Host header.",
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Name of the HTTPRoute resource.",
+                    "type": "string"
+                },
+                "parentRefs": {
+                    "description": "Parent references (usually Gateways) to attach this route to.",
+                    "type": "array"
+                },
+                "rules": {
+                    "description": "HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding.",
+                    "type": "array"
+                },
+                "scheme": {
+                    "description": "URL scheme used in HTTPRoute access instructions in NOTES.",
+                    "type": "string"
+                }
+            }
+        },
         "ingress": {
             "type": "object",
             "properties": {

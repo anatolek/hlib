@@ -708,6 +708,40 @@ ingress:
   #       - path: /
   #         pathType: Prefix
 
+httpRoute:
+  # -- (tpl/string) Name of the HTTPRoute resource.
+  # @section -- HTTPRoute
+  # @default -- Release fullname
+  name: ""
+
+  # -- (tpl/string) URL scheme used in HTTPRoute access instructions in NOTES.
+  # @section -- HTTPRoute
+  scheme: http
+
+  # -- (tpl/object) Annotations to be added to the HTTPRoute.
+  # @section -- HTTPRoute
+  annotations: {}
+
+  # -- (tpl/list) Parent references (usually Gateways) to attach this route to.
+  # @section -- HTTPRoute
+  parentRefs: []
+  #   - name: gateway
+  #     namespace: gateway-system
+  #     sectionName: https
+
+  # -- (tpl/list) Hostnames to match against the HTTP Host header.
+  # @section -- HTTPRoute
+  hostnames: []
+  #   - app.example.com
+
+  # -- (tpl/list) HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding.
+  # @section -- HTTPRoute
+  rules: []
+  #   - matches:
+  #       - path:
+  #           type: PathPrefix
+  #           value: /api
+
 pdb:
   # -- (tpl/string) Name of the PodDisruptionBudget.
   # @section -- PodDisruptionBudget

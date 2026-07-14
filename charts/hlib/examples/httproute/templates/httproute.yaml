@@ -1,0 +1,3 @@
+{{- if .Values.httpRoute.enabled }}
+{{- include "hlib.httpRoute" (dict "context" .) -}}
+{{- end }}

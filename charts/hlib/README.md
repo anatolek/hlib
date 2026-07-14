@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -1071,6 +1071,91 @@ metadata:
 {{- end -}}
 ```
 
+### `hlib.httpRoute` template
+
+Creates Kubernetes Gateway API HTTPRoute manifest.
+
+#### Basic Usage
+
+Include this template in your chart's `templates/httproute.yaml`:
+
+```handlebars
+{{- include "hlib.httpRoute" (dict "context" .) }}
+```
+
+Add the following values
+
+```yaml
+httpRoute:
+  scheme: https
+  parentRefs:
+    - name: gateway
+      namespace: gateway-system
+      sectionName: https
+  hostnames:
+    - app.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /static
+      backendRefs:
+        - name: static-service
+          port: 80
+```
+
+Rules without a `backendRefs` key automatically route traffic to the chart's Service. To create a rule that does not forward traffic, such as a redirect-only rule, explicitly set `backendRefs: []`:
+
+```yaml
+httpRoute:
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+      backendRefs: []
+```
+
+#### Configuration
+
+| Parameter      | Description                                                               | Required | Default             |
+|----------------|---------------------------------------------------------------------------|----------|---------------------|
+| `context`      | Root Helm context (usually `.`)                                           | Yes      | -                   |
+| `values`       | HTTPRoute configuration values (from `values.yaml`)                       | No       | `.Values.httpRoute` |
+| `dependencies` | Dictionary of dependent components (see below)                            | No       | -                   |
+| `override`     | Name of a template that overrides the basic one configured in the library | No       | -                   |
+
+**Dependency Integration**
+
+Used to override the configuration path of resources on which it depends.
+
+| Dependency | Usage                  | Default           |
+|------------|------------------------|-------------------|
+| `service`  | Service name injection | `.Values.service` |
+
+```handlebars
+{{- $dependencies := dict "service" .Values.newService -}}
+{{- include "hlib.httpRoute" (dict "context" . "dependencies" $dependencies) }}
+```
+
+#### Advanced: Template Overrides
+
+The changes can only be added to the HTTPRoute base template via `override` parameter as follows:
+
+```handlebars
+{{- include "hlib.httpRoute" (dict "context" . "override" "app.httpRoute") -}}
+
+{{- define "app.httpRoute" -}}
+metadata:
+  name: {{ printf "%s-ui" (include "hlib.fullname" $) | trunc 63 | trimSuffix "-" }}
+{{- end -}}
+```
+
 ### `hlib.hpa` template
 
 Creates Kubernetes HorizontalPodAutoscaler resources.
@@ -1465,6 +1550,7 @@ Output Depends on Configuration:
 
 | Service Type  | 	Example Output                                            |
 |---------------|-------------------------------------------------------------|
+| HTTPRoute     | Access application via HTTPRoute: https://app.example.com/  |
 | Ingress       | Access application via Ingress: https://app.example.com/api |
 | NodePort	    | Provides kubectl commands to retrieve node IP and ports     |
 | LoadBalancer	| Provides commands to get LB IP and port                     |
@@ -1489,10 +1575,10 @@ CLUSTER_NAME=...
 
 #### Customization Options
 
-Override Service/Ingress References
+Override Service/Ingress/HTTPRoute References
 
 ```handlebars
-{{- include "hlib.notes.accessAppInfo" (dict "context" . "service" .Values.customService "ingress" .Values.specialIngress) }}
+{{- include "hlib.notes.accessAppInfo" (dict "context" . "service" .Values.customService "ingress" .Values.specialIngress "httpRoute" .Values.customHttpRoute) }}
 ```
 
 ## Values
@@ -1658,6 +1744,17 @@ Override Service/Ingress References
 | global.nodeSelector | tpl/object | `{}` | Node selector to apply to all pods in all workloads. |
 | global.timezone | tpl/string | `""` | Default timezone to configure in containers, if applicable. |
 | global.tolerations | tpl/list | `[]` | Tolerations to apply to all pods in all workloads. |
+
+### HTTPRoute
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| httpRoute.annotations | tpl/object | `{}` | Annotations to be added to the HTTPRoute. |
+| httpRoute.hostnames | tpl/list | `[]` | Hostnames to match against the HTTP Host header. |
+| httpRoute.name | tpl/string | Release fullname | Name of the HTTPRoute resource. |
+| httpRoute.parentRefs | tpl/list | `[]` | Parent references (usually Gateways) to attach this route to. |
+| httpRoute.rules | tpl/list | `[]` | HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding. |
+| httpRoute.scheme | tpl/string | `"http"` | URL scheme used in HTTPRoute access instructions in NOTES. |
 
 ### Ingress
 
