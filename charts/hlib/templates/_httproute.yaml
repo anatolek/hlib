@@ -38,10 +38,12 @@ spec:
     {{- if $rule.sessionPersistence }}
     sessionPersistence: {{- include "hlib.util.tplrender" (dict "value" $rule.sessionPersistence "context" $) | nindent 6 }}
     {{- end }}
-    backendRefs:
+    {{- if hasKey $rule "backendRefs" }}
     {{- if $rule.backendRefs }}
-    {{- include "hlib.util.tplrender" (dict "value" $rule.backendRefs "context" $) | nindent 4 }}
+    backendRefs: {{- include "hlib.util.tplrender" (dict "value" $rule.backendRefs "context" $) | nindent 6 }}
+    {{- end }}
     {{- else }}
+    backendRefs:
       - name: {{ include "hlib.util.tplrender" (dict "value" ($svc.name | default (include "hlib.fullname" $)) "context" $) }}
         port: {{ include "hlib.util.tplrender" (dict "value" ($svc.port | default 80) "context" $) }}
     {{- end }}

@@ -14,6 +14,7 @@ Add the following values
 
 ```yaml
 httpRoute:
+  scheme: https
   parentRefs:
     - name: gateway
       namespace: gateway-system
@@ -34,7 +35,18 @@ httpRoute:
           port: 80
 ```
 
-Rules without `backendRefs` automatically route traffic to the chart's Service.
+Rules without a `backendRefs` key automatically route traffic to the chart's Service. To create a rule that does not forward traffic, such as a redirect-only rule, explicitly set `backendRefs: []`:
+
+```yaml
+httpRoute:
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+      backendRefs: []
+```
 
 #### Configuration
 

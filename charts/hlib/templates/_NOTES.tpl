@@ -34,27 +34,26 @@ REVISION: {{ $.Release.Revision }}
 {{- $hr := .httpRoute | default $.Values.httpRoute -}}
 {{- $ing := .ingress | default $.Values.ingress -}}
 {{- $svc := .service | default $.Values.service -}}
+{{- $scheme := $hr.scheme | default "http" -}}
 {{- $svcType := $svc.type | default "ClusterIP" -}}
 {{- $svcPort := $svc.port | default 80 -}}
 
 {{- if and $hr.enabled $hr.hostnames $hr.rules }}
 **Access application via HTTPRoute:**
 
-   {{- $useHttps := false }}
-   {{- range $hr.parentRefs }}
-   {{- if eq (.sectionName | default "") "https" }}
-   {{- $useHttps = true }}
-   {{- end }}
-   {{- end }}
    {{- range $hr.hostnames }}
    {{- $host := . }}
    {{- range $hr.rules }}
+   {{- if .matches }}
    {{- range .matches }}
    {{- if .path }}
-   http{{ if $useHttps }}s{{ end }}://{{ $host }}{{ .path.value | default "/" }}
+   {{ $scheme }}://{{ $host }}{{ .path.value | default "/" }}
    {{- else }}
-   http{{ if $useHttps }}s{{ end }}://{{ $host }}/
+   {{ $scheme }}://{{ $host }}/
    {{- end }}
+   {{- end }}
+   {{- else }}
+   {{ $scheme }}://{{ $host }}/
    {{- end }}
    {{- end }}
    {{- end }}

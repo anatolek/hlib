@@ -714,6 +714,10 @@ httpRoute:
   # @default -- Release fullname
   name: ""
 
+  # -- (tpl/string) URL scheme used in HTTPRoute access instructions in NOTES.
+  # @section -- HTTPRoute
+  scheme: http
+
   # -- (tpl/object) Annotations to be added to the HTTPRoute.
   # @section -- HTTPRoute
   annotations: {}
@@ -730,7 +734,7 @@ httpRoute:
   hostnames: []
   #   - app.example.com
 
-  # -- (tpl/list) HTTP routing rules. Rules without backendRefs use the chart Service.
+  # -- (tpl/list) HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding.
   # @section -- HTTPRoute
   rules: []
   #   - matches:

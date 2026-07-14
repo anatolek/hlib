@@ -6,7 +6,7 @@ keywords:
 - gateway
 name: httproute
 type: application
-version: "1.29"
+version: "1.29.0"
 icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
 dependencies:
 - name: hlib

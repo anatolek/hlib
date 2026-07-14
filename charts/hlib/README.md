@@ -1087,6 +1087,7 @@ Add the following values
 
 ```yaml
 httpRoute:
+  scheme: https
   parentRefs:
     - name: gateway
       namespace: gateway-system
@@ -1107,7 +1108,18 @@ httpRoute:
           port: 80
 ```
 
-Rules without `backendRefs` automatically route traffic to the chart's Service.
+Rules without a `backendRefs` key automatically route traffic to the chart's Service. To create a rule that does not forward traffic, such as a redirect-only rule, explicitly set `backendRefs: []`:
+
+```yaml
+httpRoute:
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+      backendRefs: []
+```
 
 #### Configuration
 
@@ -1741,7 +1753,8 @@ Override Service/Ingress/HTTPRoute References
 | httpRoute.hostnames | tpl/list | `[]` | Hostnames to match against the HTTP Host header. |
 | httpRoute.name | tpl/string | Release fullname | Name of the HTTPRoute resource. |
 | httpRoute.parentRefs | tpl/list | `[]` | Parent references (usually Gateways) to attach this route to. |
-| httpRoute.rules | tpl/list | `[]` | HTTP routing rules. Rules without backendRefs use the chart Service. |
+| httpRoute.rules | tpl/list | `[]` | HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding. |
+| httpRoute.scheme | tpl/string | `"http"` | URL scheme used in HTTPRoute access instructions in NOTES. |
 
 ### Ingress
 

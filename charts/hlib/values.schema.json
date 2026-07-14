@@ -594,8 +594,12 @@
                     "type": "array"
                 },
                 "rules": {
-                    "description": "HTTP routing rules. Rules without backendRefs use the chart Service.",
+                    "description": "HTTP routing rules. Rules without a backendRefs key use the chart Service; set backendRefs to [] to omit forwarding.",
                     "type": "array"
+                },
+                "scheme": {
+                    "description": "URL scheme used in HTTPRoute access instructions in NOTES.",
+                    "type": "string"
                 }
             }
         },

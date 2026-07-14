@@ -5,6 +5,8 @@ diagnosticMode:
 httpRoute:
   # -- Whether to enable HTTPRoute.
   enabled: true
+  # -- URL scheme used in the access instructions.
+  scheme: https
   parentRefs:
     - name: gateway
       namespace: gateway-system
