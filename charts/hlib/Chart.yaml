@@ -3,7 +3,7 @@ name: hlib
 description: Helm library chart for common Kubernetes templates
 type: library
 kubeVersion: '>=1.32.0-0'
-version: 0.6.0
+version: 0.7.0
 home: https://github.com/anatolek/helm-charts
 icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
 sources:
@@ -23,11 +23,12 @@ keywords:
   - ingress
   - httproute
   - gateway
+  - network-policy
 annotations:
   artifacthub.io/license: Apache-2.0
   artifacthub.io/changes: |
     - kind: added
-      description: HTTPRoute template (hlib.httpRoute) for Gateway API routing with Service dependency injection
+      description: NetworkPolicy template (hlib.networkPolicy) with configurable podSelector, policyTypes, ingress and egress rules
   artifacthub.io/links: |
     - name: GitHub Repository
       url: https://github.com/anatolek/helm-charts

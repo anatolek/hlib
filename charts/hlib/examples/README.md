@@ -10,6 +10,7 @@
 | `simple-deployment`    | Complete chart for simple application                             |
 | `init-deployment`      | Simple chart, a good start for deploying a new application |
 | `volumes`              | Mounting secrets and configmaps as volumes                        |
+| `network-policy`       | Create NetworkPolicy with ingress and egress rules               |
 
 To render a chart try to run:
 

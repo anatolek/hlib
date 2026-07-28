@@ -1,0 +1,37 @@
+{{- define "hlib.networkPolicy.tpl" -}}
+{{- $ := .context -}}
+{{- $np := .values | default $.Values.networkPolicy | default (dict) -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "hlib.util.tplrender" (dict "value" ($np.name | default (include "hlib.fullname" $)) "context" $) }}
+  labels: {{- include "hlib.labels" $ | nindent 4 }}
+  {{- if $np.annotations }}
+  annotations: {{- include "hlib.util.tplrender" (dict "value" $np.annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if kindIs "map" $np.podSelector }}
+  podSelector: {{- include "hlib.util.tplrender" (dict "value" $np.podSelector "context" $) | nindent 4 }}
+  {{- else }}
+  podSelector:
+    matchLabels: {{- include "hlib.selectorLabels" $ | nindent 6 }}
+  {{- end }}
+  {{- if $np.policyTypes }}
+  policyTypes: {{- include "hlib.util.tplrender" (dict "value" $np.policyTypes "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $np.ingress }}
+  ingress: {{- include "hlib.util.tplrender" (dict "value" $np.ingress "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if $np.egress }}
+  egress: {{- include "hlib.util.tplrender" (dict "value" $np.egress "context" $) | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{- define "hlib.networkPolicy" -}}
+{{- if .override }}
+{{- $_ := set . "base" "hlib.networkPolicy.tpl" -}}
+{{- include "hlib.util.merge" . -}}
+{{- else }}
+{{- toYaml (fromYaml (include "hlib.networkPolicy.tpl" .)) -}}
+{{- end -}}
+{{- end -}}

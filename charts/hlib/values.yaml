@@ -742,6 +742,52 @@ httpRoute:
   #           type: PathPrefix
   #           value: /api
 
+networkPolicy:
+  # -- (tpl/string) Override the name of the NetworkPolicy.
+  # @section -- NetworkPolicy
+  # @default -- Release fullname
+  name: ""
+
+  # -- (tpl/object) Annotations to add to the NetworkPolicy metadata.
+  # @section -- NetworkPolicy
+  annotations: {}
+
+  # @schema type: [object, null]
+  # -- (tpl/object) Selects the pods to which this NetworkPolicy applies. Set to `{}` to select all pods in the namespace.
+  # @section -- NetworkPolicy
+  # @default -- Chart selector labels
+  podSelector:
+
+  # @schema itemEnum: [Ingress, Egress]; uniqueItems
+  # -- (tpl/list) List of rule types the NetworkPolicy relates to. Valid values are "Ingress" and "Egress".
+  # @section -- NetworkPolicy
+  policyTypes: []
+  #   - Ingress
+  #   - Egress
+
+  # @schema item: object
+  # -- (tpl/list) List of ingress rules applied to the selected pods. Traffic is allowed if it matches at least one rule.
+  # @section -- NetworkPolicy
+  ingress: []
+  #   - from:
+  #       - podSelector:
+  #           matchLabels:
+  #             role: frontend
+  #     ports:
+  #       - protocol: TCP
+  #         port: 80
+
+  # @schema item: object
+  # -- (tpl/list) List of egress rules applied to the selected pods. Traffic is allowed if it matches at least one rule.
+  # @section -- NetworkPolicy
+  egress: []
+  #   - to:
+  #       - ipBlock:
+  #           cidr: 10.0.0.0/24
+  #     ports:
+  #       - protocol: TCP
+  #         port: 5978
+
 pdb:
   # -- (tpl/string) Name of the PodDisruptionBudget.
   # @section -- PodDisruptionBudget

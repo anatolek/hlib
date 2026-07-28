@@ -1,0 +1,3 @@
+{{- include "hlib.notes.chartInfo" (dict "context" .) }}
+
+{{- include "hlib.notes.releaseInfo" (dict "context" .) }}

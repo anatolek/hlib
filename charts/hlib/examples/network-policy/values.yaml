@@ -1,0 +1,31 @@
+networkPolicy:
+  # -- Restrict the rule types that apply to the selected pods.
+  policyTypes:
+    - Ingress
+    - Egress
+
+  # -- Allow ingress traffic only from frontend pods on TCP/8080.
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+
+  # -- Allow egress to a database CIDR on TCP/5432 and DNS to the cluster.
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
