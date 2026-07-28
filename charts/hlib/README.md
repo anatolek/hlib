@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -1156,6 +1156,95 @@ metadata:
 {{- end -}}
 ```
 
+### `hlib.networkPolicy` template
+
+Creates Kubernetes NetworkPolicy resources.
+
+By default, the policy applies to the pods selected by the chart's selector labels. No
+`ingress`, `egress`, or `policyTypes` fields are rendered unless explicitly provided.
+
+NetworkPolicy rules are allowlists. For example, setting `policyTypes: [Ingress]` with
+no ingress rules denies all ingress traffic to the selected pods.
+
+#### Basic Usage
+
+Include this template in your chart's `templates/network-policy.yaml`:
+
+```handlebars
+{{- include "hlib.networkPolicy" (dict "context" .) }}
+```
+
+#### Configuration
+
+| Parameter  | Description                                                               | Required | Default                 |
+|------------|---------------------------------------------------------------------------|----------|-------------------------|
+| `context`  | Root Helm context (usually `.`)                                           | Yes      | -                       |
+| `values`   | NetworkPolicy configuration values (from `values.yaml`)                   | No       | `.Values.networkPolicy` |
+| `override` | Name of a template that overrides the basic one configured in the library | No       | -                       |
+
+**Configure ingress and egress rules**
+
+Rules are defined via `networkPolicy.ingress` and `networkPolicy.egress`, mirroring the Kubernetes API. Set `networkPolicy.policyTypes` to control which rule types apply:
+
+```yaml
+networkPolicy:
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 80
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5978
+```
+
+**Override the selected pods**
+
+By default, `podSelector` matches the chart's selector labels. Provide
+`networkPolicy.podSelector` to target different pods:
+
+```yaml
+networkPolicy:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: api
+```
+
+Set an empty selector to select all pods in the namespace, for example for a
+default-deny ingress policy:
+
+```yaml
+networkPolicy:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress: []
+```
+
+#### Advanced: Template Overrides
+
+Additional fields can be merged into the base template with the `override` parameter:
+
+```handlebars
+{{- include "hlib.networkPolicy" (dict "context" . "override" "app.networkPolicy") -}}
+
+{{- define "app.networkPolicy" -}}
+metadata:
+  labels:
+    network-policy-purpose: restricted
+{{- end -}}
+```
+
 ### `hlib.hpa` template
 
 Creates Kubernetes HorizontalPodAutoscaler resources.
@@ -1792,6 +1881,17 @@ Override Service/Ingress/HTTPRoute References
 | job.tolerations | tpl/list | `.Values.global.tolerations` | Tolerations for the Pod. |
 | job.topologySpreadConstraints | tpl/list | `[]` | Topology spread constraints for the Pod. |
 | job.ttlSecondsAfterFinished | tpl/int | `3600` | Seconds to retain the job after it finishes. |
+
+### NetworkPolicy
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| networkPolicy.annotations | tpl/object | `{}` | Annotations to add to the NetworkPolicy metadata. |
+| networkPolicy.egress | tpl/list | `[]` | List of egress rules applied to the selected pods. Traffic is allowed if it matches at least one rule. |
+| networkPolicy.ingress | tpl/list | `[]` | List of ingress rules applied to the selected pods. Traffic is allowed if it matches at least one rule. |
+| networkPolicy.name | tpl/string | Release fullname | Override the name of the NetworkPolicy. |
+| networkPolicy.podSelector | tpl/object | Chart selector labels | Selects the pods to which this NetworkPolicy applies. Set to `{}` to select all pods in the namespace. |
+| networkPolicy.policyTypes | tpl/list | `[]` | List of rule types the NetworkPolicy relates to. Valid values are "Ingress" and "Egress". |
 
 ### PodDisruptionBudget
 

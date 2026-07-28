@@ -725,6 +725,51 @@
             "description": "Override the chart full name from `{{ Release.Name }}-{{ .Chart.Name }}` to `{{ Release.Name }}-{{ .Values.nameOverride }}`.",
             "type": "string"
         },
+        "networkPolicy": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "description": "Annotations to add to the NetworkPolicy metadata.",
+                    "type": "object"
+                },
+                "egress": {
+                    "description": "List of egress rules applied to the selected pods. Traffic is allowed if it matches at least one rule.",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "ingress": {
+                    "description": "List of ingress rules applied to the selected pods. Traffic is allowed if it matches at least one rule.",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }
+                },
+                "name": {
+                    "description": "Override the name of the NetworkPolicy.",
+                    "type": "string"
+                },
+                "podSelector": {
+                    "description": "Selects the pods to which this NetworkPolicy applies. Set to `{}` to select all pods in the namespace.",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "policyTypes": {
+                    "description": "List of rule types the NetworkPolicy relates to. Valid values are \"Ingress\" and \"Egress\".",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "enum": [
+                            "Ingress",
+                            "Egress"
+                        ]
+                    }
+                }
+            }
+        },
         "pdb": {
             "type": "object",
             "properties": {
