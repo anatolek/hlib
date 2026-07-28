@@ -4,6 +4,46 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: NetworkPolicy template (hlib.networkPolicy) with configurable podSelector, policyTypes, ingress and egress rules
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: GitHub Repository
+          url: https://github.com/anatolek/helm-charts
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    created: "2026-07-28T13:15:35.9949318Z"
+    description: Helm library chart for common Kubernetes templates
+    digest: 3380ea74361aef7203e0ccbd5d35277c44713942854db925e969ad09df21cb1a
+    home: https://github.com/anatolek/helm-charts
+    icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
+    keywords:
+    - helm
+    - library
+    - kubernetes
+    - templates
+    - deployment
+    - cronjob
+    - daemonset
+    - service
+    - ingress
+    - httproute
+    - gateway
+    - network-policy
+    kubeVersion: '>=1.32.0-0'
+    maintainers:
+    - email: anatolek@ukr.net
+      name: Anatolii Pedchenko
+    name: hlib
+    sources:
+    - https://github.com/anatolek/helm-charts
+    type: library
+    urls:
+    - https://github.com/anatolek/helm-charts/releases/download/hlib-0.7.0/hlib-0.7.0.tgz
+    version: 0.7.0
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: HTTPRoute template (hlib.httpRoute) for Gateway API routing with Service dependency injection
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/license: Apache-2.0
@@ -379,4 +419,4 @@ entries:
     urls:
     - https://github.com/anatolek/helm-charts/releases/download/hlib-0.0.1/hlib-0.0.1.tgz
     version: 0.0.1
-generated: "2026-07-14T21:03:11.555535812Z"
+generated: "2026-07-28T13:15:35.994988617Z"
