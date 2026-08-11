@@ -978,6 +978,35 @@
                     "type": "string"
                 }
             }
+        },
+        "vpa": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "description": "Annotations to add to the VPA resource.",
+                    "type": "object"
+                },
+                "name": {
+                    "description": "Name of the VPA resource.",
+                    "type": "string"
+                },
+                "recommenders": {
+                    "description": "Recommender responsible for generating the recommendation. Empty uses the default recommender.",
+                    "type": "array"
+                },
+                "resourcePolicy": {
+                    "description": "Controls how the autoscaler computes recommended resources (containerPolicies).",
+                    "type": "object"
+                },
+                "targetRef": {
+                    "description": "Reference to the controller managing the set of pods to scale.",
+                    "type": "object"
+                },
+                "updatePolicy": {
+                    "description": "Rules on how changes are applied to the pods (e.g. updateMode, minReplicas).",
+                    "type": "object"
+                }
+            }
         }
     }
 }

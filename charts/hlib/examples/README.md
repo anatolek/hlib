@@ -11,6 +11,7 @@
 | `init-deployment`      | Simple chart, a good start for deploying a new application |
 | `volumes`              | Mounting secrets and configmaps as volumes                        |
 | `network-policy`       | Create NetworkPolicy with ingress and egress rules               |
+| `vpa`                  | Create a Vertical Pod Autoscaler                                  |
 
 To render a chart try to run:
 
