@@ -4,6 +4,47 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: New hlib.externalSecrets template for rendering External Secrets Operator ExternalSecret (external-secrets.io/v1) resources
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: GitHub Repository
+          url: https://github.com/anatolek/helm-charts
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    created: "2026-09-01T06:19:52.426911965Z"
+    description: Helm library chart for common Kubernetes templates
+    digest: 1fc1d741a53d65aa2ae0ee5deb8caf7fb39f18777e45c31da796b330ecb8d534
+    home: https://github.com/anatolek/helm-charts
+    icon: https://raw.githubusercontent.com/anatolek/helm-charts/main/charts/hlib/img/icon.png
+    keywords:
+    - helm
+    - library
+    - kubernetes
+    - templates
+    - deployment
+    - cronjob
+    - daemonset
+    - service
+    - ingress
+    - httproute
+    - gateway
+    - network-policy
+    - external-secrets
+    kubeVersion: '>=1.32.0-0'
+    maintainers:
+    - email: anatolek@ukr.net
+      name: Anatolii Pedchenko
+    name: hlib
+    sources:
+    - https://github.com/anatolek/helm-charts
+    type: library
+    urls:
+    - https://github.com/anatolek/helm-charts/releases/download/hlib-0.9.0/hlib-0.9.0.tgz
+    version: 0.9.0
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: VerticalPodAutoscaler template (hlib.vpa) and a new vpa example
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/license: Apache-2.0
@@ -459,4 +500,4 @@ entries:
     urls:
     - https://github.com/anatolek/helm-charts/releases/download/hlib-0.0.1/hlib-0.0.1.tgz
     version: 0.0.1
-generated: "2026-08-11T08:06:04.023203375Z"
+generated: "2026-09-01T06:19:52.426955241Z"
