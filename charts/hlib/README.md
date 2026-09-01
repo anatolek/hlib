@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -1005,6 +1005,76 @@ data:
 {{- end -}}
 ```
 
+### `hlib.externalSecrets` template
+
+Creates [External Secrets Operator](https://external-secrets.io/) `ExternalSecret` resources (`external-secrets.io/v1`).
+
+#### Basic Usage
+
+Include this template in your chart's `templates/external-secret.yaml`:
+
+```handlebars
+{{- include "hlib.externalSecrets" (dict "context" .) }}
+```
+
+The spec is rendered from the `externalSecrets` values, e.g.:
+
+```yaml
+externalSecrets:
+  refreshInterval: "1h"
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    creationPolicy: Owner
+  data:
+    - secretKey: token
+      remoteRef:
+        key: prod/app
+        property: token
+```
+
+#### Configuration
+
+| Parameter  | Description                                                               | Required | Default                  |
+|------------|---------------------------------------------------------------------------|----------|--------------------------|
+| `context`  | Root Helm context (usually `.`)                                           | Yes      | -                        |
+| `values`   | ExternalSecret configuration values (from `values.yaml`)                  | No       | `.Values.externalSecrets`|
+| `override` | Name of a template that overrides the basic one configured in the library | No       | -                        |
+
+#### Advanced: Template Overrides
+
+The changes can only be added to the base template via `override` parameter, e.g.:
+
+```handlebars
+{{- include "hlib.externalSecrets" (dict "context" . "override" "app.externalSecrets") -}}
+
+{{- define "app.externalSecrets" -}}
+spec:
+  dataFrom:
+    - extract:
+        key: prod/app
+{{- end -}}
+```
+
+#### External Secrets Operator templates
+
+External Secrets Operator evaluates Go templates in fields such as
+`target.template.data` and `dataFrom[].rewrite[].transform.template`. Because these
+values also pass through Helm templating, escape the operator expression with a Helm
+raw string so it reaches the `ExternalSecret` unchanged:
+
+```yaml
+externalSecrets:
+  target:
+    template:
+      data:
+        token: '{{ `{{ .token }}` }}'
+```
+
+This renders the final value as `{{ .token }}` for External Secrets Operator to
+evaluate.
+
 ### `hlib.ingress` template
 
 Creates Kubernetes Ingress manifest.
@@ -1904,6 +1974,25 @@ Override Service/Ingress/HTTPRoute References
 |-----|------|---------|-------------|
 | diagnosticMode.clusterRole.extraPermissionRules | tpl/list | `[]` | Additional RBAC cluster-wide rules required for diagnostic workloads. |
 | diagnosticMode.role.extraPermissionRules | tpl/list | `[]` | Additional RBAC rules required for diagnostic workloads. |
+
+### ExternalSecret
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| externalSecrets.annotations | tpl/object | `{}` | Annotations to add to the ExternalSecret metadata. |
+| externalSecrets.data | tpl/list | `[]` | Defines the connection between the Kubernetes Secret keys and the Provider data. |
+| externalSecrets.dataFrom | tpl/list | `[]` | Fetches all values from a specific Provider data. If multiple entries are specified, the Secret keys are merged in the specified order. |
+| externalSecrets.name | tpl/string | Release fullname | Override the name of the ExternalSecret. |
+| externalSecrets.refreshInterval | tpl/string | `""` | Amount of time before the values are read again from the SecretStore provider, specified as a Golang Duration string (e.g. "1h0m0s"). May be set to "0s" to fetch and create it once. Defaults to "1h0m0s". |
+| externalSecrets.refreshPolicy | tpl/string | `""` | Determines how the ExternalSecret should be refreshed. Valid values: "CreatedOnce", "Periodic", "OnChange". |
+| externalSecrets.secretStoreRef.kind | tpl/string | `""` | Kind of the SecretStore resource. Valid values: "SecretStore", "ClusterSecretStore". Defaults to "SecretStore". |
+| externalSecrets.secretStoreRef.name | tpl/string | `""` | Name of the SecretStore resource. |
+| externalSecrets.syncWindows | tpl/object | `{}` | Restricts periodic refreshes to allowed or denied UTC cron windows. Applies only to the "Periodic" refresh policy. |
+| externalSecrets.target.creationPolicy | tpl/string | `""` | Rules on how to create the resulting Secret. Valid values: "Owner", "Orphan", "Merge", "CreateOrMerge", "None". Defaults to "Owner". |
+| externalSecrets.target.deletionPolicy | tpl/string | `""` | Rules on how to delete the resulting Secret. Valid values: "Retain", "Merge", "Delete". Defaults to "Retain". |
+| externalSecrets.target.immutable | tpl/bool | `nil` | Defines if the final secret will be immutable. |
+| externalSecrets.target.name | tpl/string | `""` | Name of the Secret resource to be managed. Defaults to the `metadata.name` of the ExternalSecret. |
+| externalSecrets.target.template | tpl/object | `{}` | Template defines a blueprint for the created Secret resource. |
 
 ### Global
 
