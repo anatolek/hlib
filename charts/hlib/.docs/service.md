@@ -2,7 +2,7 @@
 
 Creates Kubernetes Service resources.
 
-By default, a service with type `ClusterIP` is created on port 80.
+By default, a service with type `ClusterIP` is created on port 80 with `appProtocol: http`.
 
 #### Basic Usage
 

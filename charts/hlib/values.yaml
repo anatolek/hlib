@@ -998,6 +998,10 @@ service:
   # @section -- Service
   port: 80
 
+  # -- (tpl/string) Application protocol for the primary Service port.
+  # @section -- Service
+  appProtocol: http
+
   # -- (tpl/list) Extra ports definitions to append to the Service.
   # @section -- Service
   extraPorts: []
