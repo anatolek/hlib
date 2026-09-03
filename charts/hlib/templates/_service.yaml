@@ -66,6 +66,7 @@ spec:
       port: {{ include "hlib.util.tplrender" (dict "value" ($svc.port | default 80) "context" $) }}
       targetPort: cont-tcp-port
       protocol: TCP
+      appProtocol: {{ include "hlib.util.tplrender" (dict "value" ($svc.appProtocol | default "http") "context" $) }}
       {{- if and (or (eq $svc.type "NodePort") (eq $svc.type "LoadBalancer")) $svc.nodePort }}
       nodePort: {{ include "hlib.util.tplrender" (dict "value" $svc.nodePort "context" $) }}
       {{- end }}

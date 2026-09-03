@@ -983,6 +983,10 @@
                     "description": "Annotations to add to the Service metadata.",
                     "type": "object"
                 },
+                "appProtocol": {
+                    "description": "Application protocol for the primary Service port.",
+                    "type": "string"
+                },
                 "clusterIP": {
                     "description": "ClusterIP address to assign to the Service.",
                     "type": "string"

@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -826,7 +826,7 @@ TZ: {{ ((.Values.global).timezone) }}
 
 Creates Kubernetes Service resources.
 
-By default, a service with type `ClusterIP` is created on port 80.
+By default, a service with type `ClusterIP` is created on port 80 with `appProtocol: http`.
 
 #### Basic Usage
 
@@ -2118,6 +2118,7 @@ Override Service/Ingress/HTTPRoute References
 |-----|------|---------|-------------|
 | service.allocateLoadBalancerNodePorts | tpl/bool | `nil` | Allocate node ports for LoadBalancer-type Services. |
 | service.annotations | tpl/object | `{}` | Annotations to add to the Service metadata. |
+| service.appProtocol | tpl/string | `"http"` | Application protocol for the primary Service port. |
 | service.clusterIP | tpl/string | `""` | ClusterIP address to assign to the Service. |
 | service.externalIPs | tpl/list | `[]` | List of external IP addresses. |
 | service.externalName | tpl/string | `""` | ExternalName for ExternalName-type Services. |
