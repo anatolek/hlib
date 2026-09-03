@@ -1,0 +1,3 @@
+{{- if .Values.podMonitor.enabled }}
+{{- include "hlib.podMonitor" (dict "context" .) -}}
+{{- end }}

@@ -790,6 +790,54 @@ vpa:
   recommenders: []
   #   - name: custom-recommender
 
+serviceMonitor:
+  # -- (tpl/string) Name of the ServiceMonitor resource.
+  # @section -- ServiceMonitor
+  # @default -- Release fullname
+  name: ""
+
+  # -- (tpl/object) Annotations to add to the ServiceMonitor metadata.
+  # @section -- ServiceMonitor
+  annotations: {}
+
+  # -- (tpl/object) Additional labels to add to the ServiceMonitor metadata, for example labels selected by a Prometheus instance.
+  # @section -- ServiceMonitor
+  labels: {}
+
+  # -- (tpl/object) Prometheus Operator ServiceMonitor specification. The selector and endpoints default to the chart Service labels and `svc-tcp-port`.
+  # @section -- ServiceMonitor
+  spec: {}
+  #   selector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: my-app
+  #   endpoints:
+  #     - port: metrics
+  #       path: /metrics
+
+podMonitor:
+  # -- (tpl/string) Name of the PodMonitor resource.
+  # @section -- PodMonitor
+  # @default -- Release fullname
+  name: ""
+
+  # -- (tpl/object) Annotations to add to the PodMonitor metadata.
+  # @section -- PodMonitor
+  annotations: {}
+
+  # -- (tpl/object) Additional labels to add to the PodMonitor metadata, for example labels selected by a Prometheus instance.
+  # @section -- PodMonitor
+  labels: {}
+
+  # -- (tpl/object) Prometheus Operator PodMonitor specification. The selector and podMetricsEndpoints default to the chart Pod labels and `cont-tcp-port`.
+  # @section -- PodMonitor
+  spec: {}
+  #   selector:
+  #     matchLabels:
+  #       app.kubernetes.io/name: my-app
+  #   podMetricsEndpoints:
+  #     - port: metrics
+  #       path: /metrics
+
 ingress:
   # -- (tpl/string) Name of the ingress resource.
   # @section -- Ingress

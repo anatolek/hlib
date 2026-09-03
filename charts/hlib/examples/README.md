@@ -13,6 +13,7 @@
 | `volumes`              | Mounting secrets and configmaps as volumes                        |
 | `network-policy`       | Create NetworkPolicy with ingress and egress rules               |
 | `vpa`                  | Create a Vertical Pod Autoscaler                                  |
+| `monitoring`           | Create Prometheus Operator ServiceMonitor and PodMonitor resources |
 
 To render a chart try to run:
 
