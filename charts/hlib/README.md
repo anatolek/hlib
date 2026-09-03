@@ -1,6 +1,6 @@
 # hlib
 
-![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 [![GitHub license](https://img.shields.io/github/license/anatolek/helm-charts)](https://github.com/anatolek/helm-charts)
 
 A reusable Helm library chart that provides common Kubernetes template primitives for building consistent, maintainable charts across applications.
@@ -1315,6 +1315,131 @@ metadata:
 {{- end -}}
 ```
 
+### `hlib.serviceMonitor` template
+
+Creates Prometheus Operator ServiceMonitor resources (`monitoring.coreos.com/v1`). A
+ServiceMonitor discovers Services and configures how Prometheus scrapes their endpoints.
+
+> Requires the [Prometheus Operator](https://prometheus-operator.dev/) and its CRDs to be installed in the cluster.
+
+By default, the monitor selects the chart Service using `hlib.selectorLabels` and scrapes
+its `svc-tcp-port` port. The full `serviceMonitor.spec` object is rendered as-is, so any
+field supported by the installed Prometheus Operator version can be configured.
+
+#### Basic Usage
+
+Include this template in your chart's `templates/service-monitor.yaml`:
+
+```handlebars
+{{- include "hlib.serviceMonitor" (dict "context" .) }}
+```
+
+Optionally add labels used by the Prometheus instance to discover the ServiceMonitor and
+customize the scrape endpoint:
+
+```yaml
+serviceMonitor:
+  labels:
+    release: kube-prometheus-stack
+  spec:
+    endpoints:
+      - port: svc-tcp-port
+        path: /metrics
+        interval: 30s
+```
+
+#### Configuration
+
+| Parameter  | Description                                                               | Required | Default                  |
+|------------|---------------------------------------------------------------------------|----------|--------------------------|
+| `context`  | Root Helm context (usually `.`)                                           | Yes      | -                        |
+| `values`   | ServiceMonitor configuration values (from `values.yaml`)                  | No       | `.Values.serviceMonitor` |
+| `override` | Name of a template that overrides the basic one configured in the library | No       | -                        |
+
+`serviceMonitor.labels` are merged over the standard `hlib.labels`. The
+`serviceMonitor.spec` value accepts the upstream
+[ServiceMonitorSpec](https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1.ServiceMonitorSpec),
+including selectors, namespace selection, scrape endpoints, relabeling, authentication,
+limits, and protocol settings. Explicit `spec.selector` or `spec.endpoints` values replace
+the defaults, including explicit empty objects or lists.
+
+#### Advanced: Template Overrides
+
+Additional fields can be merged into the base template with the `override` parameter:
+
+```handlebars
+{{- include "hlib.serviceMonitor" (dict "context" . "override" "app.serviceMonitor") -}}
+
+{{- define "app.serviceMonitor" -}}
+metadata:
+  labels:
+    monitoring-tier: platform
+{{- end -}}
+```
+
+### `hlib.podMonitor` template
+
+Creates Prometheus Operator PodMonitor resources (`monitoring.coreos.com/v1`). A PodMonitor
+discovers Pods directly, without requiring a Service, and configures how Prometheus scrapes
+their endpoints.
+
+> Requires the [Prometheus Operator](https://prometheus-operator.dev/) and its CRDs to be installed in the cluster.
+
+By default, the monitor selects the chart Pods using `hlib.selectorLabels` and scrapes
+their `cont-tcp-port` port. The full `podMonitor.spec` object is rendered as-is, so any
+field supported by the installed Prometheus Operator version can be configured.
+
+#### Basic Usage
+
+Include this template in your chart's `templates/pod-monitor.yaml`:
+
+```handlebars
+{{- include "hlib.podMonitor" (dict "context" .) }}
+```
+
+Optionally add labels used by the Prometheus instance to discover the PodMonitor and
+customize the scrape endpoint:
+
+```yaml
+podMonitor:
+  labels:
+    release: kube-prometheus-stack
+  spec:
+    podMetricsEndpoints:
+      - port: cont-tcp-port
+        path: /metrics
+        interval: 30s
+```
+
+#### Configuration
+
+| Parameter  | Description                                                               | Required | Default              |
+|------------|---------------------------------------------------------------------------|----------|----------------------|
+| `context`  | Root Helm context (usually `.`)                                           | Yes      | -                    |
+| `values`   | PodMonitor configuration values (from `values.yaml`)                      | No       | `.Values.podMonitor` |
+| `override` | Name of a template that overrides the basic one configured in the library | No       | -                    |
+
+`podMonitor.labels` are merged over the standard `hlib.labels`. The `podMonitor.spec`
+value accepts the upstream
+[PodMonitorSpec](https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1.PodMonitorSpec),
+including selectors, namespace selection, scrape endpoints, relabeling, authentication,
+limits, and protocol settings. Explicit `spec.selector` or `spec.podMetricsEndpoints`
+values replace the defaults, including explicit empty objects or lists.
+
+#### Advanced: Template Overrides
+
+Additional fields can be merged into the base template with the `override` parameter:
+
+```handlebars
+{{- include "hlib.podMonitor" (dict "context" . "override" "app.podMonitor") -}}
+
+{{- define "app.podMonitor" -}}
+metadata:
+  labels:
+    monitoring-tier: platform
+{{- end -}}
+```
+
 ### `hlib.hpa` template
 
 Creates Kubernetes HorizontalPodAutoscaler resources.
@@ -2075,6 +2200,15 @@ Override Service/Ingress/HTTPRoute References
 | pdb.name | tpl/string | Release fullname | Name of the PodDisruptionBudget. |
 | pdb.unhealthyPodEvictionPolicy | tpl/string | `""` | Unhealthy pod eviction policy. Valid values: "AlwaysAllow", "IfHealthyBudget". |
 
+### PodMonitor
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| podMonitor.annotations | tpl/object | `{}` | Annotations to add to the PodMonitor metadata. |
+| podMonitor.labels | tpl/object | `{}` | Additional labels to add to the PodMonitor metadata, for example labels selected by a Prometheus instance. |
+| podMonitor.name | tpl/string | Release fullname | Name of the PodMonitor resource. |
+| podMonitor.spec | tpl/object | `{}` | Prometheus Operator PodMonitor specification. The selector and podMetricsEndpoints default to the chart Pod labels and `cont-tcp-port`. |
+
 ### ClusterRole
 
 | Key | Type | Default | Description |
@@ -2145,6 +2279,15 @@ Override Service/Ingress/HTTPRoute References
 | serviceAccount.annotations | tpl/object | `{}` | Annotations to add to the ServiceAccount metadata. |
 | serviceAccount.automountServiceAccountToken | tpl/bool | `nil` | Automatically mount the service account token. |
 | serviceAccount.name | tpl/string | Release fullname | Override the name of the ServiceAccount. |
+
+### ServiceMonitor
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| serviceMonitor.annotations | tpl/object | `{}` | Annotations to add to the ServiceMonitor metadata. |
+| serviceMonitor.labels | tpl/object | `{}` | Additional labels to add to the ServiceMonitor metadata, for example labels selected by a Prometheus instance. |
+| serviceMonitor.name | tpl/string | Release fullname | Name of the ServiceMonitor resource. |
+| serviceMonitor.spec | tpl/object | `{}` | Prometheus Operator ServiceMonitor specification. The selector and endpoints default to the chart Service labels and `svc-tcp-port`. |
 
 ### VerticalPodAutoscaler
 

@@ -1,0 +1,30 @@
+{{- define "hlib.podMonitor.tpl" -}}
+{{- $ := .context -}}
+{{- $podMonitor := .values | default $.Values.podMonitor | default (dict) -}}
+{{- $labels := mergeOverwrite (fromYaml (include "hlib.labels" $)) (deepCopy ($podMonitor.labels | default (dict))) -}}
+{{- $spec := deepCopy ($podMonitor.spec | default (dict)) -}}
+{{- if not (hasKey $spec "selector") -}}
+{{- $_ := set $spec "selector" (dict "matchLabels" (fromYaml (include "hlib.selectorLabels" $))) -}}
+{{- end -}}
+{{- if not (hasKey $spec "podMetricsEndpoints") -}}
+{{- $_ := set $spec "podMetricsEndpoints" (list (dict "port" "cont-tcp-port")) -}}
+{{- end -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "hlib.util.tplrender" (dict "value" ($podMonitor.name | default (include "hlib.fullname" $)) "context" $) }}
+  labels: {{- include "hlib.util.tplrender" (dict "value" $labels "context" $) | nindent 4 }}
+  {{- if $podMonitor.annotations }}
+  annotations: {{- include "hlib.util.tplrender" (dict "value" $podMonitor.annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec: {{- include "hlib.util.tplrender" (dict "value" $spec "context" $) | nindent 2 }}
+{{- end }}
+
+{{- define "hlib.podMonitor" -}}
+{{- if .override }}
+{{- $_ := set . "base" "hlib.podMonitor.tpl" -}}
+{{- include "hlib.util.merge" . -}}
+{{- else }}
+{{- toYaml (fromYaml (include "hlib.podMonitor.tpl" .)) -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,37 @@
+serviceMonitor:
+  # -- Create a ServiceMonitor that discovers the chart Service.
+  enabled: true
+  # -- Labels used by Prometheus to discover this ServiceMonitor.
+  labels:
+    release: kube-prometheus-stack
+  # -- ServiceMonitor scrape configuration.
+  spec:
+    endpoints:
+      - port: svc-tcp-port
+        path: /metrics
+        interval: 30s
+
+podMonitor:
+  # -- Create a PodMonitor that discovers the chart Pods directly. Disabled by default to avoid scraping the same target twice.
+  enabled: false
+  # -- Labels used by Prometheus to discover this PodMonitor.
+  labels:
+    release: kube-prometheus-stack
+  # -- PodMonitor scrape configuration.
+  spec:
+    podMetricsEndpoints:
+      - port: cont-tcp-port
+        path: /metrics
+        interval: 30s
+
+# @ignored
+deployment:
+  container:
+    resourceTier: "m100Mi-c100m"
+    port: 8080
+    image:
+      repository: nginx
+
+# @ignored
+service:
+  port: 8080

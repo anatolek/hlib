@@ -1,0 +1,30 @@
+{{- define "hlib.serviceMonitor.tpl" -}}
+{{- $ := .context -}}
+{{- $serviceMonitor := .values | default $.Values.serviceMonitor | default (dict) -}}
+{{- $labels := mergeOverwrite (fromYaml (include "hlib.labels" $)) (deepCopy ($serviceMonitor.labels | default (dict))) -}}
+{{- $spec := deepCopy ($serviceMonitor.spec | default (dict)) -}}
+{{- if not (hasKey $spec "selector") -}}
+{{- $_ := set $spec "selector" (dict "matchLabels" (fromYaml (include "hlib.selectorLabels" $))) -}}
+{{- end -}}
+{{- if not (hasKey $spec "endpoints") -}}
+{{- $_ := set $spec "endpoints" (list (dict "port" "svc-tcp-port")) -}}
+{{- end -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hlib.util.tplrender" (dict "value" ($serviceMonitor.name | default (include "hlib.fullname" $)) "context" $) }}
+  labels: {{- include "hlib.util.tplrender" (dict "value" $labels "context" $) | nindent 4 }}
+  {{- if $serviceMonitor.annotations }}
+  annotations: {{- include "hlib.util.tplrender" (dict "value" $serviceMonitor.annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec: {{- include "hlib.util.tplrender" (dict "value" $spec "context" $) | nindent 2 }}
+{{- end }}
+
+{{- define "hlib.serviceMonitor" -}}
+{{- if .override }}
+{{- $_ := set . "base" "hlib.serviceMonitor.tpl" -}}
+{{- include "hlib.util.merge" . -}}
+{{- else }}
+{{- toYaml (fromYaml (include "hlib.serviceMonitor.tpl" .)) -}}
+{{- end -}}
+{{- end -}}
